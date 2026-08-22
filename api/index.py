@@ -14,7 +14,11 @@ from .store import ArtifactUnavailable, load_snapshot
 app = FastAPI(title="NYC311 Pulse API", version="1.0.0", docs_url="/docs")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://nyc311-pulse.vercel.app"],
+    allow_origins=[
+        "http://localhost:3000",
+        "https://nyc311-pulse.vercel.app",
+        "https://nyc311-pulse.billylu242424.chatgpt.site",
+    ],
     allow_methods=["GET"],
     allow_headers=["*"],
 )
@@ -50,6 +54,11 @@ def meta() -> dict[str, Any]:
     return load_snapshot()["meta"]
 
 
+@app.get("/v1/snapshot")
+def snapshot() -> dict[str, Any]:
+    return load_snapshot()
+
+
 @app.get("/v1/dimensions")
 def dimensions() -> dict[str, Any]:
     return load_snapshot()["dimensions"]
@@ -62,7 +71,7 @@ def signals(
     problem: str | None = None,
     agency: str | None = None,
     signal_type: str | None = Query(default=None, alias="type"),
-    severity: Literal["high", "watch"] | None = None,
+    severity: Literal["high", "watch", "research_flag"] | None = None,
     limit: int = Query(default=50, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
 ) -> list[dict[str, Any]]:
@@ -93,6 +102,8 @@ def signal_detail(signal_id: str) -> dict[str, Any]:
 def trends(
     metric: Literal["volume"] = "volume",
     signal_id: str | None = None,
+    district: str | None = None,
+    problem: str | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
 ) -> dict[str, Any]:
@@ -110,9 +121,21 @@ def trends(
         raise HTTPException(status_code=422, detail="end_date falls outside the snapshot")
     if start and end and start > end:
         raise HTTPException(status_code=422, detail="start_date must not be after end_date")
-    rows = snapshot["trends"]["by_signal"].get(signal_id, []) if signal_id else snapshot["trends"]["citywide_volume"]
-    if signal_id and not rows:
-        raise HTTPException(status_code=404, detail=f"No trend for signal: {signal_id}")
+    if signal_id:
+        rows = snapshot["trends"]["by_signal"].get(signal_id, [])
+    elif district and problem:
+        matching = next(
+            (row for row in snapshot["signals"] if row["district"] == district and row["problem"] == problem), None
+        )
+        rows = snapshot["trends"]["by_signal"].get(matching["id"], []) if matching else []
+    elif district:
+        rows = snapshot["trends"].get("by_district", {}).get(district, [])
+    elif problem:
+        rows = snapshot["trends"].get("by_problem", {}).get(problem, [])
+    else:
+        rows = snapshot["trends"]["citywide_volume"]
+    if (signal_id or district or problem) and not rows:
+        raise HTTPException(status_code=404, detail="No trend matches the requested dimensions")
     if start_date:
         rows = [row for row in rows if row["date"] >= start_date]
     if end_date:
@@ -128,3 +151,8 @@ def map_values(metric: Literal["requests", "severity"] = "severity") -> dict[str
 @app.get("/v1/quality")
 def quality() -> dict[str, Any]:
     return load_snapshot()["quality"]
+
+
+@app.get("/v1/evaluation")
+def evaluation() -> dict[str, Any]:
+    return load_snapshot()["evaluation"]

@@ -22,6 +22,21 @@ test("home has no serious or critical axe violations", async ({ page }) => {
   expect(severe).toEqual([]);
 });
 
+test("evaluation lab exposes locked metrics and the pending human gate", async ({ page }) => {
+  await page.goto("/evaluation");
+  await expect(page.getByRole("heading", { name: /A signal earns release/i })).toBeVisible();
+  await expect(page.getByText(/locked synthetic test/i).first()).toBeVisible();
+  await expect(page.getByText("Real-history review", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download packet/i })).toBeVisible();
+});
+
+test("district selection changes the explore trend title", async ({ page }) => {
+  await page.goto("/explore");
+  await expect(page.locator("main")).toHaveAttribute("data-app-ready", "true");
+  await page.getByLabel("Selected district").selectOption("Queens 01");
+  await expect(page.getByRole("region", { name: "Queens 01 evaluated category volume" })).toBeVisible();
+});
+
 test("cached snapshot remains usable when the API check fails", async ({ page }) => {
   await page.route("**/data/snapshot.json", route => route.abort());
   await page.goto("/");

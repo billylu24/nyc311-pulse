@@ -9,8 +9,9 @@
 ## What a reviewer can verify in 30 seconds
 
 - **Real scope:** 7,498,437 official requests created from 2024-08-01 through 2026-07-31; extracted on 2026-08-21.
-- **Explainable signals:** each production alert compares a day with the median and MAD of eight matching weekdays and uses a stable hashed ID.
-- **Honest evaluation:** the current injection backtest produced F1 = 0.057 and 16.31 false alerts/week, so signals are visibly labeled **exploratory**.
+- **Complete aggregates:** 436,266 district/problem/day rows span the declared window, paginate across nine Socrata pages, and reconcile to 4,502,830 selected-category requests.
+- **Locked evaluation:** the selected 26-week Negative Binomial detector achieved F1 = 0.823, 4.45 false episodes/week, and zero-day median delay on 1,200 independently seeded events.
+- **Two release gates:** the synthetic gate passed; all public candidates remain `research_flag` until the 60-case blind real-history review reaches Precision@20 ≥ 0.65.
 - **Privacy by design:** no address, street, coordinates, resolution text, or raw complaint endpoint is present.
 - **Accessible fallback:** charts have equivalent tables, the map has a 59-district button interface, and the static snapshot remains usable if the API is unavailable.
 
@@ -79,6 +80,6 @@ The API exposes aggregate metadata, dimensions, signals, trends, district values
 
 This project reports observed patterns. It does not infer resident need, agency efficiency, service quality, or causation. `due_date` is excluded because coverage is insufficient for a defensible citywide SLA measure. Joint Interest Areas and `Unspecified` remain in quality analysis but are excluded from the 59-district map ranking.
 
-The fixed snapshot and volume-surge workflow are implemented end to end. The analytical modules also include right-censored closure estimation and dbt closure/open-age marts; the public snapshot currently ships volume signals only because its evaluation target was not met. This is intentionally visible in the UI and case study.
+The fixed snapshot and volume-surge workflow are implemented end to end. The analytical modules also include right-censored closure estimation and dbt closure/open-age marts, but the public model scope is volume only. Synthetic validation does not promote the product by itself: real-history review is still pending and the UI therefore uses research language throughout.
 
 Sources: [NYC Open Data 311 Service Requests](https://data.cityofnewyork.us/resource/erm2-nwe9) and [Community District boundaries](https://data.cityofnewyork.us/City-Government/Community-Districts/5crt-au7u). NYC311 Pulse is an independent portfolio project and is not affiliated with the City of New York.

@@ -38,6 +38,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/snapshot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Snapshot */
+        get: operations["snapshot_v1_snapshot_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/dimensions": {
         parameters: {
             query?: never;
@@ -140,6 +157,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/evaluation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Evaluation */
+        get: operations["evaluation_v1_evaluation_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -168,7 +202,7 @@ export interface components {
              * Severity
              * @enum {string}
              */
-            severity: "high" | "watch";
+            severity: "high" | "watch" | "research_flag";
             /** As Of */
             as_of: string;
             /** District */
@@ -203,6 +237,20 @@ export interface components {
             title: string;
             /** Display Effect */
             display_effect: string;
+            /** Model Version */
+            model_version?: string | null;
+            /** Episode Start */
+            episode_start?: string | null;
+            /** Episode End */
+            episode_end?: string | null;
+            /** Upper Bound */
+            upper_bound?: number | null;
+            /** Excess Count */
+            excess_count?: number | null;
+            /** Calibrated Score */
+            calibrated_score?: number | null;
+            /** Detector */
+            detector?: string | null;
         } & {
             [key: string]: unknown;
         };
@@ -268,6 +316,28 @@ export interface operations {
             };
         };
     };
+    snapshot_v1_snapshot_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
     dimensions_v1_dimensions_get: {
         parameters: {
             query?: never;
@@ -298,7 +368,7 @@ export interface operations {
                 problem?: string | null;
                 agency?: string | null;
                 type?: string | null;
-                severity?: ("high" | "watch") | null;
+                severity?: ("high" | "watch" | "research_flag") | null;
                 limit?: number;
                 offset?: number;
             };
@@ -364,6 +434,8 @@ export interface operations {
             query?: {
                 metric?: "volume";
                 signal_id?: string | null;
+                district?: string | null;
+                problem?: string | null;
                 start_date?: string | null;
                 end_date?: string | null;
             };
@@ -429,6 +501,28 @@ export interface operations {
         };
     };
     quality_v1_quality_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    evaluation_v1_evaluation_get: {
         parameters: {
             query?: never;
             header?: never;

@@ -45,6 +45,26 @@
         }
       }
     },
+    "/v1/snapshot": {
+      "get": {
+        "summary": "Snapshot",
+        "operationId": "snapshot_v1_snapshot_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Snapshot V1 Snapshot Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/dimensions": {
       "get": {
         "summary": "Dimensions",
@@ -159,7 +179,8 @@
                 {
                   "enum": [
                     "high",
-                    "watch"
+                    "watch",
+                    "research_flag"
                   ],
                   "type": "string"
                 },
@@ -294,6 +315,38 @@
             }
           },
           {
+            "name": "district",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "District"
+            }
+          },
+          {
+            "name": "problem",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Problem"
+            }
+          },
+          {
             "name": "start_date",
             "in": "query",
             "required": false,
@@ -417,6 +470,26 @@
           }
         }
       }
+    },
+    "/v1/evaluation": {
+      "get": {
+        "summary": "Evaluation",
+        "operationId": "evaluation_v1_evaluation_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Evaluation V1 Evaluation Get"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -471,7 +544,8 @@
             "type": "string",
             "enum": [
               "high",
-              "watch"
+              "watch",
+              "research_flag"
             ],
             "title": "Severity"
           },
@@ -556,6 +630,83 @@
           "display_effect": {
             "type": "string",
             "title": "Display Effect"
+          },
+          "model_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Version"
+          },
+          "episode_start": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Episode Start"
+          },
+          "episode_end": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Episode End"
+          },
+          "upper_bound": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upper Bound"
+          },
+          "excess_count": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Excess Count"
+          },
+          "calibrated_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Calibrated Score"
+          },
+          "detector": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detector"
           }
         },
         "additionalProperties": true,

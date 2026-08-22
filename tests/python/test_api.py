@@ -33,9 +33,10 @@ SNAPSHOT = {
             "display_effect": "4.0×",
         }
     ],
-    "trends": {"citywide_volume": [], "by_signal": {"SIG-TEST": []}},
+    "trends": {"citywide_volume": [], "by_signal": {"SIG-TEST": []}, "by_district": {}, "by_problem": {}},
     "map": [],
     "quality": {},
+    "evaluation": {"status": "revalidation_required"},
 }
 
 
@@ -48,6 +49,8 @@ def test_health_and_meta(monkeypatch):
     test_client = client(monkeypatch)
     assert test_client.get("/healthz").json()["artifact"] == "test-v1"
     assert test_client.get("/v1/meta").status_code == 200
+    assert test_client.get("/v1/snapshot").json()["meta"]["artifact_version"] == "test-v1"
+    assert test_client.get("/v1/evaluation").json()["status"] == "revalidation_required"
 
 
 def test_signal_filter_and_detail(monkeypatch):
@@ -85,10 +88,12 @@ def test_openapi_contains_every_public_endpoint():
     assert {
         "/healthz",
         "/v1/meta",
+        "/v1/snapshot",
         "/v1/dimensions",
         "/v1/signals",
         "/v1/signals/{signal_id}",
         "/v1/trends",
         "/v1/map",
         "/v1/quality",
+        "/v1/evaluation",
     }.issubset(paths)

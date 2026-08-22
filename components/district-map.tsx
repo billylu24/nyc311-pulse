@@ -23,7 +23,7 @@ export function DistrictMap({ values, selected, onSelect }: { values: MapDistric
       const response = await fetch("/data/community-districts.geojson"); const data = await response.json();
       data.features = data.features.map((feature: { properties: { boro_cd: number } }) => { const district = codeToDistrict(Number(feature.properties.boro_cd)); const metric = lookup.get(district); return { ...feature, properties: { ...feature.properties, district, severity: metric?.severity ?? "normal", requests: metric?.requests ?? 0 } }; });
       map.addSource("districts", { type: "geojson", data });
-      map.addLayer({ id: "district-fill", type: "fill", source: "districts", paint: { "fill-color": ["match", ["get", "severity"], "high", "#f15a34", "watch", "#c99a4d", "#d5d4cd"], "fill-opacity": ["case", ["==", ["get", "district"], selectedRef.current ?? ""], 1, .82] } });
+      map.addLayer({ id: "district-fill", type: "fill", source: "districts", paint: { "fill-color": ["match", ["get", "severity"], "high", "#f15a34", "watch", "#c99a4d", "research_flag", "#c99a4d", "#d5d4cd"], "fill-opacity": ["case", ["==", ["get", "district"], selectedRef.current ?? ""], 1, .82] } });
       map.addLayer({ id: "district-line", type: "line", source: "districts", paint: { "line-color": "#86857d", "line-width": ["case", ["==", ["get", "district"], selectedRef.current ?? ""], 2.4, .65] } });
       map.on("mouseenter", "district-fill", () => { map.getCanvas().style.cursor = "pointer"; }); map.on("mouseleave", "district-fill", () => { map.getCanvas().style.cursor = ""; });
       map.on("click", "district-fill", event => { const district = event.features?.[0]?.properties?.district; if (district) onSelectRef.current(district); });

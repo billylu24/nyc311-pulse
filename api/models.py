@@ -16,7 +16,7 @@ class Signal(BaseModel):
 
     id: str
     type: str
-    severity: Literal["high", "watch"]
+    severity: Literal["high", "watch", "research_flag"]
     as_of: str
     district: str
     borough: str
@@ -34,6 +34,13 @@ class Signal(BaseModel):
     recommended_action: str
     title: str
     display_effect: str
+    model_version: str | None = None
+    episode_start: str | None = None
+    episode_end: str | None = None
+    upper_bound: float | None = None
+    excess_count: float | None = None
+    calibrated_score: float | None = None
+    detector: str | None = None
 
 
 class ErrorEnvelope(BaseModel):

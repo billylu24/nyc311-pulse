@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
-const links = [{ href: "/", label: "Alert queue" }, { href: "/explore", label: "Explore" }, { href: "/methodology", label: "Methodology" }];
+const links = [{ href: "/", label: "Research queue" }, { href: "/explore", label: "Explore" }, { href: "/evaluation", label: "Evaluation" }, { href: "/methodology", label: "Methodology" }];
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -19,4 +19,3 @@ export function SiteHeader() {
     <button className="menu-button" type="button" aria-expanded={open} aria-label="Toggle navigation" onClick={() => setOpen(value => !value)}>{open ? <X size={19} /> : <Menu size={19} />}</button>
   </header>;
 }
-
