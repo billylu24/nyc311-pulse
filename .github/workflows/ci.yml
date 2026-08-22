@@ -25,7 +25,7 @@ jobs:
       - run: npm run build
       - run: .venv/bin/python -m pytest
       - run: .venv/bin/ruff check analytics api scripts tests/python
-      - run: .venv/bin/pyright
+      - run: .venv/bin/pyright --pythonpath .venv/bin/python
       - run: .venv/bin/dbt build --profiles-dir dbt
       - run: .venv/bin/python scripts/generate_openapi.py
       - run: npx openapi-typescript public/openapi.json -o lib/api-schema.d.ts

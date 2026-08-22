@@ -34,7 +34,7 @@ def run_injection_backtest(daily: pd.DataFrame, seed: int = 311) -> BacktestResu
 
     rng = np.random.default_rng(seed)
     injected = frame.copy()
-    labels: set[tuple[str, str, object]] = set()
+    labels: set[tuple[str, str, date]] = set()
     chosen = rng.choice(len(eligible), size=min(12, len(eligible)), replace=False)
     for position, chosen_index in enumerate(chosen):
         (district, problem), group = eligible[int(chosen_index)]
