@@ -1,0 +1,15 @@
+name: nyc311_pulse
+version: 1.0.0
+config-version: 2
+profile: nyc311_pulse
+model-paths: ["dbt/models"]
+test-paths: ["dbt/tests"]
+clean-targets: ["target", "dbt_packages"]
+vars:
+  raw_glob: "tests/fixtures/requests.ndjson"
+models:
+  nyc311_pulse:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table

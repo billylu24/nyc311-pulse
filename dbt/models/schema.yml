@@ -1,0 +1,24 @@
+version: 2
+models:
+  - name: stg_requests
+    description: Privacy-minimized, normalized service requests.
+    columns:
+      - name: request_id
+        tests: [not_null, unique]
+      - name: created_at_local
+        tests: [not_null]
+      - name: agency
+        tests: [not_null]
+      - name: problem
+        tests: [not_null]
+      - name: community_district
+        tests: [not_null]
+  - name: fct_requests
+    columns:
+      - name: request_id
+        tests: [not_null, unique]
+  - name: mart_daily_metrics
+    columns:
+      - name: request_count
+        tests: [not_null]
+

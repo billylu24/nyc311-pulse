@@ -1,0 +1,26 @@
+name: Rebuild fixed artifact
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_note:
+        description: Reason for rebuilding the fixed snapshot
+        required: true
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m venv .venv
+      - run: .venv/bin/python -m pip install -e . --group dev
+      - run: .venv/bin/python scripts/build_snapshot.py
+        env:
+          SOCRATA_APP_TOKEN: ${{ secrets.SOCRATA_APP_TOKEN }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nyc311-pulse-${{ github.run_id }}
+          path: public/data/

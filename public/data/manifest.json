@@ -1,0 +1,16 @@
+{
+  "artifact_version": "2026.07-v1",
+  "created_from_snapshot": "2026-08-21",
+  "request_count": 7498437,
+  "files": {
+    "snapshot.json": {
+      "bytes": 297975,
+      "sha256": "e40bef8bbdc5029d110af26a06dc21b15c2099e11d9aae946b484472bd87e8a4"
+    },
+    "community-districts.geojson": {
+      "bytes": 2704521,
+      "sha256": "dd41271c3cdd0106bff3ec9f57cf851d5e868182aaec82ec7d63a06c7b881963",
+      "features": 59
+    }
+  }
+}

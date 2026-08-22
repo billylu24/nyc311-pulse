@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: npm ci
+      - run: python -m venv .venv
+      - run: .venv/bin/python -m pip install -e . --group dev
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: .venv/bin/python -m pytest
+      - run: .venv/bin/ruff check analytics api scripts tests/python
+      - run: .venv/bin/pyright
+      - run: .venv/bin/dbt build --profiles-dir dbt
+      - run: .venv/bin/python scripts/generate_openapi.py
+      - run: npx openapi-typescript public/openapi.json -o lib/api-schema.d.ts
+      - run: git diff --exit-code -- public/openapi.json lib/api-schema.d.ts
