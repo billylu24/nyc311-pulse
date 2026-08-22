@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DEMO_DIR = ROOT / "public" / "demo"
 OUTPUT = DEMO_DIR / "nyc311-pulse-demo.mp4"
 COVER = DEMO_DIR / "nyc311-pulse-demo-cover.png"
+GIF_OUTPUT = DEMO_DIR / "nyc311-pulse-demo.gif"
 SIZE = (1280, 960)
 FPS = 15
 BACKGROUND = (242, 241, 236)
@@ -104,6 +105,30 @@ def main() -> None:
     cover_draw.polygon([(622, 426), (622, 494), (678, 460)], fill="white")
     cover.save(COVER, optimize=True)
 
+    gif_frames: list[Image.Image] = []
+    gif_durations: list[int] = []
+    gif_sequence = [intro, *frames, outro]
+    for index, frame in enumerate(gif_sequence):
+        resized = frame.resize((720, 540), Image.Resampling.LANCZOS)
+        gif_frames.append(resized.quantize(colors=96, method=Image.Quantize.MEDIANCUT))
+        gif_durations.append(1700 if index not in {0, len(gif_sequence) - 1} else 2100)
+        if index < len(gif_sequence) - 1:
+            next_frame = gif_sequence[index + 1].resize((720, 540), Image.Resampling.LANCZOS)
+            for alpha in (0.25, 0.5, 0.75):
+                blended = Image.blend(resized, next_frame, alpha)
+                gif_frames.append(blended.quantize(colors=96, method=Image.Quantize.MEDIANCUT))
+                gif_durations.append(90)
+
+    gif_frames[0].save(
+        GIF_OUTPUT,
+        save_all=True,
+        append_images=gif_frames[1:],
+        duration=gif_durations,
+        loop=0,
+        disposal=2,
+        optimize=True,
+    )
+
     sequence = [intro, *frames, outro]
     with imageio.get_writer(
         OUTPUT,
@@ -120,6 +145,7 @@ def main() -> None:
 
     print(f"Wrote {OUTPUT}")
     print(f"Wrote {COVER}")
+    print(f"Wrote {GIF_OUTPUT}")
 
 
 if __name__ == "__main__":
