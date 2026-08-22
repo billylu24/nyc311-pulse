@@ -2,7 +2,15 @@
 
 **Evidence-first anomaly triage for New York City service operations.** NYC311 Pulse turns a fixed, reproducible snapshot of official 311 data into a public alert queue, Community District map, and inspectable signal evidence. It is a portfolio case study—not a live operations product and not an agency scorecard.
 
-> [Live demo](https://nyc311-pulse.giaok.chatgpt.site) · [Case study](docs/case-study.md) · [OpenAPI contract](public/openapi.json)
+> **Deployment status:** intentionally offline. The repository, reproducible artifact, tests, and recorded walkthrough remain available for review.
+>
+> [Case study](docs/case-study.md) · [OpenAPI contract](public/openapi.json) · [Download the 24-second MP4 demo](public/demo/nyc311-pulse-demo.mp4)
+
+## Product walkthrough
+
+[![Play the NYC311 Pulse product walkthrough](public/demo/nyc311-pulse-demo-cover.png)](public/demo/nyc311-pulse-demo.mp4)
+
+The walkthrough covers the research queue, borough filtering, signal evidence, Community District exploration, district-specific trends, locked-test metrics, and methodology. The hosted demo has been withdrawn; this recording preserves the reviewer experience without requiring a live service.
 
 ![NYC311 Pulse alert queue](public/screenshots/dashboard.png)
 
@@ -23,7 +31,7 @@
 | API | FastAPI, Pydantic, generated OpenAPI TypeScript types |
 | Analytics | Python, pandas, NumPy, Kaplan–Meier utilities, deterministic injection tests |
 | Warehouse | DuckDB, dbt-duckdb, quarantines and schema tests |
-| Delivery | OpenAI Sites/Cloudflare worker frontend, optional Vercel FastAPI project, GitHub Actions |
+| Delivery | Cloudflare Worker-compatible frontend, optional FastAPI service, GitHub Actions |
 | Quality | Vitest, Testing Library, Playwright, axe, pytest, Ruff, Pyright, ESLint |
 
 ## Local development
@@ -58,6 +66,113 @@ npm run openapi:generate
 ```
 
 The request-level extractor in `analytics/socrata.py` supports an app token, pagination, retries, checkpoints, and Pydantic validation. Raw pages belong under ignored `.cache/` or `data/raw/` paths. The public builder uses Socrata server-side aggregates so the demo can be reproduced without publishing millions of request rows.
+
+## Deployment guide
+
+The repository is deliberately not attached to a live deployment. The UI is self-contained: without an API URL it reads the verified aggregate artifact from `public/data/snapshot.json`. The following steps reproduce a deployment when one is needed.
+
+### 1. Prepare the environment
+
+Install Node.js 22+, Python 3.11+, Git, and a Cloudflare account. Clone the repository and install the locked dependencies:
+
+```bash
+git clone https://github.com/billylu24/nyc311-pulse.git
+cd nyc311-pulse
+npm ci
+python -m venv .venv
+```
+
+Windows PowerShell:
+
+```powershell
+.venv\Scripts\python.exe -m pip install -e . --group dev
+```
+
+macOS or Linux:
+
+```bash
+.venv/bin/python -m pip install -e . --group dev
+```
+
+No secret is required to deploy the committed fixed snapshot. Set `SOCRATA_APP_TOKEN` only when rebuilding data from NYC Open Data; keep it in the shell or an ignored `.env` file and never commit it.
+
+### 2. Rebuild artifacts when required
+
+Skip this step to deploy the reviewed snapshot already committed to the repository. To create a new snapshot and regenerate the API contract:
+
+```powershell
+$env:SOCRATA_APP_TOKEN = "your-token"
+.venv\Scripts\python.exe scripts\build_snapshot.py
+npm run openapi:generate
+```
+
+The build fails on truncated pagination, missing dates, duplicate aggregate pages, or a mismatch with the independent Socrata count. Review `public/data/manifest.json`, the data-quality section of `public/data/snapshot.json`, and the generated review packet before publishing a rebuilt artifact.
+
+### 3. Run the release checks
+
+```bash
+npm run lint
+npm run typecheck
+npm test
+npm run build
+npm run test:e2e
+```
+
+Windows analytics checks:
+
+```powershell
+.venv\Scripts\python.exe -m pytest
+.venv\Scripts\ruff.exe check analytics api scripts tests/python
+.venv\Scripts\pyright.exe --pythonpath .venv\Scripts\python.exe
+.venv\Scripts\dbt.exe build --profiles-dir dbt
+npm run openapi:check
+```
+
+Do not publish `validated`, `high`, or `watch` alerts unless both the locked synthetic gates and real-history Precision@20 gate pass. A pending human review must remain `revalidation_required` with `research_flag` candidates.
+
+### 4. Deploy the frontend to Cloudflare Workers
+
+The vinext build emits a Worker entry point plus static assets in `dist/`:
+
+```bash
+npm run build
+npx wrangler login
+npx wrangler deploy --config dist/server/wrangler.json
+```
+
+Wrangler prints the deployment URL. Test `/`, `/explore`, `/evaluation`, `/methodology`, one `/signals/{id}` page, and `/data/snapshot.json`. Configure a custom domain in Cloudflare only after those checks pass. The default frontend uses the bundled snapshot and does not need the Python API.
+
+### 5. Run or deploy the optional aggregate API
+
+For local API development:
+
+```bash
+.venv/bin/uvicorn api.index:app --host 0.0.0.0 --port 8000
+```
+
+On Windows use `.venv\Scripts\uvicorn.exe`. Deploy `api/index.py` to a Python ASGI provider if a separately hosted API is desired. Before building the frontend, set:
+
+```bash
+NEXT_PUBLIC_API_BASE_URL=https://your-api.example.com
+```
+
+Add the frontend origin to `allow_origins` in `api/index.py`, deploy the API, and verify `/healthz`, `/v1/snapshot`, `/v1/signals`, `/v1/trends`, and `/v1/evaluation`. If the API is unavailable, the UI continues to use the committed snapshot.
+
+### 6. Post-deployment checklist
+
+- Confirm the artifact hash matches `public/data/manifest.json`.
+- Confirm the model status and all displayed metrics match the README and case study.
+- Click every primary navigation item on desktop and mobile.
+- Verify keyboard navigation, the accessible chart tables, the district button alternative, and axe checks.
+- Confirm no raw request, address, coordinate, free-text complaint, token, or local cache is published.
+- Record the deployed commit SHA and artifact version in the release notes.
+
+The README walkthrough can be regenerated after recapturing `public/demo/01-home.png` through `10-data-quality.png`:
+
+```bash
+python -m pip install pillow imageio imageio-ffmpeg
+python scripts/build_demo_video.py
+```
 
 ## Architecture
 

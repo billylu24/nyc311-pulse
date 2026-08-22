@@ -50,6 +50,7 @@ yarn-error.log*
 /logs/
 /test-results/
 /playwright-report/
+/public/demo/[0-9][0-9]-*.png
 *.tsbuildinfo
 __pycache__/
 *.py[cod]
