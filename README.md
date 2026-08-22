@@ -8,9 +8,9 @@
 
 ## Product walkthrough
 
-![NYC311 Pulse product walkthrough](public/demo/nyc311-pulse-demo.gif)
+https://github.com/user-attachments/assets/673d9127-5213-4476-a3ca-b078063fdcc6
 
-[Open or download the higher-quality MP4](public/demo/nyc311-pulse-demo.mp4)
+[Download the source MP4](public/demo/nyc311-pulse-demo.mp4)
 
 The walkthrough covers the research queue, borough filtering, signal evidence, Community District exploration, district-specific trends, locked-test metrics, and methodology. The hosted demo has been withdrawn; this recording preserves the reviewer experience without requiring a live service.
 
@@ -169,7 +169,7 @@ Add the frontend origin to `allow_origins` in `api/index.py`, deploy the API, an
 - Confirm no raw request, address, coordinate, free-text complaint, token, or local cache is published.
 - Record the deployed commit SHA and artifact version in the release notes.
 
-The README walkthrough GIF and MP4 can be regenerated after recapturing `public/demo/01-home.png` through `10-data-quality.png`:
+The README walkthrough MP4 can be regenerated after recapturing `public/demo/01-home.png` through `10-data-quality.png`:
 
 ```bash
 python -m pip install pillow imageio imageio-ffmpeg
