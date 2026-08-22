@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { headers } from "next/headers";
-import Link from "next/link";
 import { QueryProvider } from "@/components/query-provider";
 import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
@@ -47,7 +46,7 @@ export default function RootLayout({
         <QueryProvider>
           <SiteHeader />
           {children}
-          <footer className="site-footer"><strong>NYC311 Pulse</strong><p>Official NYC Open Data · deterministic metrics · reproducible snapshot</p><div><Link href="/methodology">Methods</Link><a href="https://data.cityofnewyork.us/resource/erm2-nwe9" rel="noreferrer" target="_blank">Source data ↗</a></div></footer>
+          <footer className="site-footer"><strong>NYC311 Pulse</strong><p>Official NYC Open Data · deterministic metrics · reproducible snapshot</p><div><a href="/methodology">Methods</a><a href="https://data.cityofnewyork.us/resource/erm2-nwe9" rel="noreferrer" target="_blank">Source data ↗</a></div></footer>
         </QueryProvider>
       </body>
     </html>

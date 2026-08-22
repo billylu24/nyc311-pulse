@@ -22,6 +22,25 @@ test("home has no serious or critical axe violations", async ({ page }) => {
   expect(severe).toEqual([]);
 });
 
+test("primary navigation follows every internal route", async ({ page }) => {
+  const clickNavigationLink = async (name: string) => {
+    await page.waitForLoadState("networkidle");
+    const menuButton = page.getByRole("button", { name: "Toggle navigation" });
+    if (await menuButton.isVisible()) await menuButton.click();
+    await page.getByRole("link", { name, exact: true }).click();
+  };
+
+  await page.goto("/");
+  await clickNavigationLink("Explore");
+  await expect(page).toHaveURL(/\/explore$/);
+  await clickNavigationLink("Evaluation");
+  await expect(page).toHaveURL(/\/evaluation$/);
+  await clickNavigationLink("Methodology");
+  await expect(page).toHaveURL(/\/methodology$/);
+  await clickNavigationLink("Research queue");
+  await expect(page).toHaveURL(/\/$/);
+});
+
 test("evaluation lab exposes locked metrics and the pending human gate", async ({ page }) => {
   await page.goto("/evaluation");
   await expect(page.getByRole("heading", { name: /A signal earns release/i })).toBeVisible();
