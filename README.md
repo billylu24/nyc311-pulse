@@ -2,7 +2,7 @@
 
 **Evidence-first anomaly triage for New York City service operations.** NYC311 Pulse turns a fixed, reproducible snapshot of official 311 data into a public alert queue, Community District map, and inspectable signal evidence. It is a portfolio case study—not a live operations product and not an agency scorecard.
 
-> [Live demo](https://nyc311-pulse.billylu242424.chatgpt.site) · [Case study](docs/case-study.md) · [OpenAPI contract](public/openapi.json)
+> [Live demo](https://nyc311-pulse.giaok.chatgpt.site) · [Case study](docs/case-study.md) · [OpenAPI contract](public/openapi.json)
 
 ![NYC311 Pulse alert queue](public/screenshots/dashboard.png)
 
